@@ -21,7 +21,7 @@ import 'features/money/bloc/money_bloc.dart';
 late AppsflyerSdk _appsflyerSdk;
 String amount = '';
 String apsss = '';
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppTrackingTransparency.requestTrackingAuthorization();
   await initializeAppsFlyer();
@@ -41,52 +41,37 @@ Future<void> main() async {
 }
 
 Future<void> initializeAppsFlyer() async {
-  final AppsFlyerOptions options = AppsFlyerOptions(
-    showDebug: false,
-    afDevKey: '4rYehnSYQsVcM2jmim5KyC',
-    appId: '6733230026',
-    timeToWaitForATTUserAuthorization: 15,
-    disableAdvertisingIdentifier: false,
-    disableCollectASA: false,
-    manualStart: true,
-  );
-  _appsflyerSdk = AppsflyerSdk(options);
+  try {
+    final AppsFlyerOptions options = AppsFlyerOptions(
+      showDebug: false,
+      afDevKey: '4rYehnSYQsVcM2jmim5KyC',
+      appId: '6733230026',
+      timeToWaitForATTUserAuthorization: 15,
+      disableAdvertisingIdentifier: false,
+      disableCollectASA: false,
+    );
+    _appsflyerSdk = AppsflyerSdk(options);
 
-  await _appsflyerSdk.initSdk(
-    registerConversionDataCallback: true,
-    registerOnAppOpenAttributionCallback: true,
-    registerOnDeepLinkingCallback: true,
-  );
+    await _appsflyerSdk.initSdk(
+      registerConversionDataCallback: true,
+      registerOnAppOpenAttributionCallback: true,
+      registerOnDeepLinkingCallback: true,
+    );
 
-  _appsflyerSdk.onDeepLinking((DeepLinkResult dp) {
-    switch (dp.status) {
-      case Status.FOUND:
-        print(dp.deepLink?.toString());
-        print("deep link value: ${dp.deepLink?.deepLinkValue}");
-        break;
-      case Status.NOT_FOUND:
-        print("deep link not found");
-        break;
-      case Status.ERROR:
-        print("deep link error: ${dp.error}");
-        break;
-      case Status.PARSE_ERROR:
-        print("deep link status parsing error");
-        break;
-    }
-    print("onDeepLinking res: " + dp.toString());
-  });
+    apsss = await _appsflyerSdk.getAppsFlyerUID() ?? '';
+    print("AppsFlyer UID: $apsss");
 
-  apsss = await _appsflyerSdk.getAppsFlyerUID() ?? '';
-
-  _appsflyerSdk.startSDK(
-    onSuccess: () {
-      print("AppsFlyer SDK started successfully");
-    },
-    onError: (int code, String message) {
-      print("AppsFlyer SDK failed to start: code $code, message: $message");
-    },
-  );
+    _appsflyerSdk.startSDK(
+      onSuccess: () {
+        print("AppsFlyer SDK started successfully");
+      },
+      onError: (int code, String message) {
+        print("AppsFlyer SDK failed to start: code $code, message: $message");
+      },
+    );
+  } catch (e) {
+    print("Error initializing AppsFlyer: $e");
+  }
 }
 
 Future<bool> checkCoins() async {
