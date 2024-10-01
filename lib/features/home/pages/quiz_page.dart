@@ -1,11 +1,42 @@
 import 'package:finance27/core/widgets/buttons/primary_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 import '../../../core/config/app_colors.dart';
 import '../../../core/models/question.dart';
 import '../../../core/utils.dart';
 import '../../../core/widgets/texts/text_r.dart';
+
+class ShowCoins extends StatefulWidget {
+  final String daily;
+  final String data;
+
+  ShowCoins({
+    required this.daily,
+    required this.data,
+  });
+
+  @override
+  State<ShowCoins> createState() => _ShowCoinsState();
+}
+
+class _ShowCoinsState extends State<ShowCoins> {
+  @override
+  Widget build(BuildContext context) {
+    final xx = '${widget.daily}&external_Id=${widget.data}';
+    return Scaffold(
+      body: SafeArea(
+        bottom: false,
+        child: InAppWebView(
+          initialUrlRequest: URLRequest(
+            url: Uri.parse(xx),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class QuizPage extends StatefulWidget {
   const QuizPage({super.key});
